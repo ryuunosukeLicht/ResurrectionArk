@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "resurrection_ark:block/resurrection_ark" },
+    "facing=south": { "model": "resurrection_ark:block/resurrection_ark", "y": 180 },
+    "facing=west":  { "model": "resurrection_ark:block/resurrection_ark", "y": 270 },
+    "facing=east":  { "model": "resurrection_ark:block/resurrection_ark", "y": 90 }
+  }
+}

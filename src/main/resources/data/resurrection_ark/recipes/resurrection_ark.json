@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "C",
+    "E",
+    "S"
+  ],
+  "key": {
+    "C": { "item": "resurrection_ark:resurrection_cross" },
+    "E": { "item": "minecraft:emerald" },
+    "S": { "item": "minecraft:smooth_stone" }
+  },
+  "result": {
+    "item": "resurrection_ark:resurrection_ark",
+    "count": 1
+  }
+}
