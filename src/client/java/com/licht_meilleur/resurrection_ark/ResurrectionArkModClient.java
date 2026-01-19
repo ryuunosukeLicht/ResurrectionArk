@@ -1,6 +1,7 @@
 package com.licht_meilleur.resurrection_ark;
 
 
+import com.licht_meilleur.resurrection_ark.network.ResurrectionArkPackets;
 import com.licht_meilleur.resurrection_ark.screen.ModScreenHandlers;
 import com.licht_meilleur.resurrection_ark.screen.ResurrectionArkScreen;
 import net.fabricmc.api.ClientModInitializer;
