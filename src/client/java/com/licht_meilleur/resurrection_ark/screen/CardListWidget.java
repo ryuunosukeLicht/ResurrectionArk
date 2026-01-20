@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-
+import java.util.UUID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntConsumer;
@@ -64,6 +64,11 @@ public class CardListWidget implements Drawable, Element, Selectable {
     private static final int DEL_W = 16;
     private static final int DEL_H = 16;
 
+    public String getCardName(int index) {
+        if (index < 0 || index >= cards.size()) return "(unknown)";
+        return cards.get(index).name;
+    }
+
     public CardListWidget(int x, int y, int width, int height, IntConsumer onDeleteRequested) {
         this.x = x;
         this.y = y;
@@ -91,6 +96,7 @@ public class CardListWidget implements Drawable, Element, Selectable {
     private int maxScroll() {
         return Math.max(0, contentHeight() - height);
     }
+
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
@@ -248,10 +254,12 @@ public class CardListWidget implements Drawable, Element, Selectable {
         public final EntityType<? extends LivingEntity> type;
         public final int cost;
         public final int scale;
+        public final UUID mobUuid;
 
         private LivingEntity cached;
 
-        public CardData(String name, EntityType<? extends LivingEntity> type, int cost, int scale) {
+        public CardData(UUID mobUuid, String name, EntityType<? extends LivingEntity> type, int cost, int scale) {
+            this.mobUuid = mobUuid;
             this.name = name;
             this.type = type;
             this.cost = cost;

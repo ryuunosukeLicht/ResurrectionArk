@@ -4,18 +4,21 @@ import com.licht_meilleur.resurrection_ark.ResurrectionArkMod;
 import com.licht_meilleur.resurrection_ark.block.entity.ResurrectionArkBlockEntity;
 import com.licht_meilleur.resurrection_ark.screen.ResurrectionArkScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.text.Text;
 
 public class ResurrectionArkServerPackets {
 
     public static final Identifier RESURRECT =
-            new Identifier("resurrection_ark", "resurrect");
+            new Identifier(ResurrectionArkMod.MOD_ID, "resurrect");
 
-    public static final Identifier DELETE_MOB = new Identifier(ResurrectionArkMod.MOD_ID, "delete_mob");
+    public static final Identifier DELETE_MOB =
+            new Identifier(ResurrectionArkMod.MOD_ID, "delete_mob");
+
     public static void register() {
+
+        // 蘇生（デバッグログもここで出す）
         ServerPlayNetworking.registerGlobalReceiver(
                 RESURRECT,
                 (server, player, handler, buf, responseSender) -> {
@@ -23,29 +26,41 @@ public class ResurrectionArkServerPackets {
                     int idx = buf.readInt();
 
                     server.execute(() -> {
-                        if (player.currentScreenHandler
-                                instanceof ResurrectionArkScreenHandler screenHandler) {
+                        if (player.currentScreenHandler instanceof ResurrectionArkScreenHandler screenHandler) {
                             screenHandler.attemptResurrect(idx, player);
                         }
                     });
                 }
         );
-        ServerPlayNetworking.registerGlobalReceiver(DELETE_MOB, (server, player, handler, buf, responseSender) -> {
-            BlockPos pos = buf.readBlockPos();
-            int index = buf.readInt();
 
-            server.execute(() -> {
-                if (!(player.getWorld().getBlockEntity(pos) instanceof ResurrectionArkBlockEntity arkBe)) return;
+        // 削除
+        ServerPlayNetworking.registerGlobalReceiver(
+                DELETE_MOB,
+                (server, player, handler, buf, responseSender) -> {
 
-                boolean ok = arkBe.removeMob(index);
-                if (ok) {
-                    player.sendMessage(Text.literal("登録を削除しました。"), false);
-                } else {
-                    player.sendMessage(Text.literal("削除に失敗しました。"), false);
+                    BlockPos pos = buf.readBlockPos();
+                    int index = buf.readInt();
+
+                    // ★こっちでも確認したいならログOK
+                    ResurrectionArkMod.LOGGER.info(
+                            "DELETE request by {} uuid={} pos={} index={}",
+                            player.getName().getString(),
+                            player.getUuid(),
+                            pos,
+                            index
+                    );
+
+                    server.execute(() -> {
+                        if (!(player.getWorld().getBlockEntity(pos) instanceof ResurrectionArkBlockEntity arkBe)) return;
+
+                        boolean ok = arkBe.removeMob(index);
+                        if (ok) {
+                            player.sendMessage(Text.literal("登録を削除しました。"), false);
+                        } else {
+                            player.sendMessage(Text.literal("削除に失敗しました。"), false);
+                        }
+                    });
                 }
-            });
-        });
-
+        );
     }
-
 }

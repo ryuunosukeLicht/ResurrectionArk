@@ -1,48 +1,32 @@
 package com.licht_meilleur.resurrection_ark.screen;
 
-import com.licht_meilleur.resurrection_ark.block.entity.ResurrectionArkBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class ResurrectionArkScreenHandler extends ScreenHandler {
 
     private final BlockPos arkPos;
 
-    // サーバ側（BlockEntity#createMenu から）
-    public ResurrectionArkScreenHandler(int syncId, PlayerInventory inv) {
+    // サーバ側：BlockEntity#createMenu から呼ばれる（arkPosはBlockEntityのpos）
+    public ResurrectionArkScreenHandler(int syncId, PlayerInventory inventory, BlockPos arkPos) {
         super(ModScreenHandlers.RESURRECTION_ARK, syncId);
-        this.arkPos = BlockPos.ORIGIN; // サーバ側ではScreen側表示に使わない
+        this.arkPos = arkPos;
     }
 
-    // クライアント側（ExtendedScreenHandlerType から）
-    public ResurrectionArkScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
-        super(ModScreenHandlers.RESURRECTION_ARK, syncId);
-        this.arkPos = buf.readBlockPos();
+    // クライアント側：ExtendedScreenHandlerType から呼ばれる（bufからposを受け取る）
+    public ResurrectionArkScreenHandler(int syncId, PlayerInventory inventory, PacketByteBuf buf) {
+        this(syncId, inventory, buf.readBlockPos());
     }
 
     public BlockPos getArkPos() {
         return arkPos;
-    }
-
-    /**
-     * サーバ側で蘇生を試みる入口。
-     * ResurrectionArkServerPackets から呼ばれる想定。
-     *
-     * ※ まだ中身はダミーでOK。次で「エメラルド32消費→NBTからスポーン」を入れる。
-     */
-    public void attemptResurrect(int index, ServerPlayerEntity player) {
-        if (player.getWorld().isClient) return;
-
-        BlockPos pos = player.getBlockPos(); // fallback
-        // サーバ側でも arkPos を使いたい場合は、ScreenHandler生成を「posを渡す方式」に変える必要がある。
-        // いまは「コンパイルを通す＋次の実装の土台」なので、ここは後で置き換える。
-
-        player.sendMessage(net.minecraft.text.Text.literal("[ResurrectionArk] attemptResurrect index=" + index), false);
     }
 
     @Override
@@ -53,5 +37,49 @@ public class ResurrectionArkScreenHandler extends ScreenHandler {
     @Override
     public ItemStack quickMove(PlayerEntity player, int slot) {
         return ItemStack.EMPTY;
+    }
+
+    // =========================
+    // ★ 蘇生処理（サーバー側）
+    // =========================
+    public void attemptResurrect(int index, ServerPlayerEntity player) {
+
+        final int COST = 32;
+
+        if (!hasEmeralds(player, COST)) {
+            player.sendMessage(Text.literal("エメラルドが足りません（必要: 32）"), false);
+            return;
+        }
+
+        removeEmeralds(player, COST);
+
+        // TODO: 次のステップで Mob 蘇生処理を実装
+        player.sendMessage(Text.literal("蘇生しました！（仮）"), false);
+    }
+
+    private boolean hasEmeralds(ServerPlayerEntity player, int amount) {
+        int count = 0;
+        for (ItemStack stack : player.getInventory().main) {
+            if (stack.getItem() == Items.EMERALD) {
+                count += stack.getCount();
+                if (count >= amount) return true;
+            }
+        }
+        return false;
+    }
+
+    private void removeEmeralds(ServerPlayerEntity player, int amount) {
+        int remaining = amount;
+
+        for (int i = 0; i < player.getInventory().main.size(); i++) {
+            ItemStack stack = player.getInventory().main.get(i);
+            if (stack.getItem() != Items.EMERALD) continue;
+
+            int remove = Math.min(stack.getCount(), remaining);
+            stack.decrement(remove);
+            remaining -= remove;
+
+            if (remaining <= 0) break;
+        }
     }
 }

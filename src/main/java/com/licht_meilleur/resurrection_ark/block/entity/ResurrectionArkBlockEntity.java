@@ -21,14 +21,13 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
 import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ResurrectionArkBlockEntity extends BlockEntity
-        implements ExtendedScreenHandlerFactory {
+        implements net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory{
 
     public ResurrectionArkBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RESURRECTION_ARK_ENTITY_TYPE, pos, state);
@@ -48,14 +47,10 @@ public class ResurrectionArkBlockEntity extends BlockEntity
        ========================= */
 
     @Override
-    public ScreenHandler createMenu(
-            int syncId,
-            PlayerInventory inventory,
-            PlayerEntity player
-    ) {
-        // ★ サーバ側生成（クライアントは PacketByteBuf 経由）
-        return new ResurrectionArkScreenHandler(syncId, inventory);
+    public ScreenHandler createMenu(int syncId, PlayerInventory inventory, PlayerEntity player) {
+        return new ResurrectionArkScreenHandler(syncId, inventory, this.pos);
     }
+
     public static class StoredMob {
         public Identifier typeId;
         public String name;
@@ -63,6 +58,8 @@ public class ResurrectionArkBlockEntity extends BlockEntity
 
         // ★重複防止用（元MobのUUID）
         public UUID sourceUuid;
+
+        public UUID mobUuid;
 
         public StoredMob(Identifier typeId, String name, NbtCompound data, UUID sourceUuid) {
             this.typeId = typeId;
@@ -187,4 +184,6 @@ public class ResurrectionArkBlockEntity extends BlockEntity
         markDirtyAndSync();
         return true;
     }
+
+
 }
