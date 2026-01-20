@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
     public static final Block RESURRECTION_ARK = registerBlock("resurrection_ark", new ResurrectionArkBlock());
 
-    public static final Block LINK_BLOCK = registerBlock("link_block",
+    public static final Block LINK_BLOCK = registerBlock("RESURRECTION_ARK_BLOCK",
             new Block(AbstractBlock.Settings.copy(Blocks.STONE)
                     .strength(4.0f)
                     .sounds(BlockSoundGroup.METAL)));

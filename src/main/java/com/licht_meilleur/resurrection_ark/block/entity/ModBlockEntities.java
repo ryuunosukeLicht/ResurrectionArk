@@ -1,19 +1,21 @@
 package com.licht_meilleur.resurrection_ark.block.entity;
 
+import com.licht_meilleur.resurrection_ark.ResurrectionArkMod;
+import com.licht_meilleur.resurrection_ark.block.ModBlocks;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import com.licht_meilleur.resurrection_ark.block.ModBlocks;
 
 public class ModBlockEntities {
-    public static BlockEntityType<LinkBlockEntity> LINK_BLOCK_ENTITY;
+
+    public static BlockEntityType<ResurrectionArkBlockEntity> RESURRECTION_ARK_ENTITY_TYPE;
 
     public static void registerAll() {
-        LINK_BLOCK_ENTITY = Registry.register(
+        RESURRECTION_ARK_ENTITY_TYPE = Registry.register(
                 Registries.BLOCK_ENTITY_TYPE,
-                new Identifier("resurrection_ark", "link_block_entity"),
-                BlockEntityType.Builder.create(LinkBlockEntity::new, ModBlocks.LINK_BLOCK).build(null)
+                new Identifier(ResurrectionArkMod.MOD_ID, "resurrection_ark_entity"),
+                BlockEntityType.Builder.create(ResurrectionArkBlockEntity::new, ModBlocks.RESURRECTION_ARK_BLOCK).build(null)
         );
     }
 }

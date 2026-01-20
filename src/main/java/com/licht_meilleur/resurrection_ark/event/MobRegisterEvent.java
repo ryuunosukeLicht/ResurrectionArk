@@ -8,16 +8,20 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 
 public class MobRegisterEvent {
     public static void register() {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (world.isClient) return ActionResult.PASS;
 
+
+
             // 近くに登録モード中のArkブロックがあるか探す
             for (BlockPos pos : BlockPos.iterateOutwards(entity.getBlockPos(), 5, 5, 5)) {
                 if (world.getBlockEntity(pos) instanceof ResurrectionArkBlockEntity arkBe && arkBe.isRegistering()) {
-                    ResurrectionData data = ResurrectionData.get(world);
+                    ServerWorld serverWorld = (ServerWorld) world;
+                    ResurrectionData data = ResurrectionData.get(serverWorld);
 
                     data.registerMob(
                             entity.getUuid(),
