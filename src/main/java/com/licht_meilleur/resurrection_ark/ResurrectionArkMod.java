@@ -5,6 +5,7 @@ import com.licht_meilleur.resurrection_ark.block.entity.ModBlockEntities;
 import com.licht_meilleur.resurrection_ark.event.MobRegisterEvent;
 import com.licht_meilleur.resurrection_ark.item.ModItemGroups;
 import com.licht_meilleur.resurrection_ark.item.ModItems;
+import com.licht_meilleur.resurrection_ark.network.ResurrectionArkServerPackets;
 import com.licht_meilleur.resurrection_ark.screen.ModScreenHandlers;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ public class ResurrectionArkMod implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		MobRegisterEvent.register();
 		ModScreenHandlers.register(); // ← これを追加
+		ResurrectionArkServerPackets.register();
 
 		System.out.println("Resurrection Ark initialized!");
 	}

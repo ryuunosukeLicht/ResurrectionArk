@@ -30,6 +30,10 @@ public class MobListScreen extends Screen {
 
     class MobListWidget extends EntryListWidget<MobListWidget.MobEntry> {
 
+        @Override
+        public void appendNarrations(net.minecraft.client.gui.screen.narration.NarrationMessageBuilder builder) {
+            // とりあえずコンパイル通す用（後でちゃんと書いてもOK）
+        }
         public MobListWidget(net.minecraft.client.MinecraftClient client,
                              int width, int height,
                              int top, int bottom, int itemHeight) {
